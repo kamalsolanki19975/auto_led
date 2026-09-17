@@ -1,0 +1,65 @@
+{
+  "summary": "End-to-end validation of AutoAds Network (Laravel 12 + Blade + MariaDB monolith) preview at fleet-ads-pro.preview.emergentagent.com. Backend: 70/70 pytest cases pass covering login for all 5 roles, admin navigation sweep across 46 URLs (dashboard, autos, owners, drivers, screens, devices, sims, advertisers, advertisements, approvals, campaigns, playlists, proof-of-play, installations, assets, maintenance, warranties, vendors, revenue, invoices, payments, expenses, rate-cards, earnings, settlements, profitability, reports/*, api-apps, api-logs, webhooks, users, roles, audit-logs, email-logs, notification-logs, settings, search, plus detail pages /devices/1 /autos/1 /campaigns/1 /drivers/1 — the previously ambiguous 'status' SQL columns render fine now), portal pages for advertiser/driver/owner/technician with correct KPI/table markers, Users CRUD (index, create form, POST create with flash), Roles (index/create/edit forms), Swagger UI, OpenAPI JSON (46 paths), REST API login+me+campaigns+autos, and full Device API chain on DEV-00003 (authenticate → heartbeat → configuration → campaigns → content → playback-events → status → acknowledgement, all HTTP 200 success:true). Critical fix applied: forced HTTPS root URL in AppServiceProvider (see updated_files) so Laravel stops emitting 'https://host:80/...' redirects behind the ingress; without this the browser could not follow post-login redirects.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /login (all authenticated redirects)",
+        "issue": "Laravel URL generator emitted redirects like 'https://fleet-ads-pro.preview.emergentagent.com:80/dashboard' because APP_URL in laravel/.env still pointed to an old preview hostname (e593cfd4-...) and TrustProxies was not forcing scheme/root. Real browsers reject :80 on HTTPS with ERR_SSL_PROTOCOL_ERROR / chrome-error, making the app unusable via UI. Fixed by (a) updating APP_URL to the current preview host and (b) URL::forceScheme('https')+URL::forceRootUrl(config('app.url')) in AppServiceProvider::boot.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "laravel/.env SANCTUM_STATEFUL_DOMAINS",
+        "issue": "Still references the stale preview host 'e593cfd4-94ec-4782-b6d2-96db6262fe49.preview.emergentagent.com'. Sanctum cookie auth from an SPA on the current preview will not treat the request as stateful. Add fleet-ads-pro.preview.emergentagent.com. Non-blocking for the Blade monolith since it uses standard session auth, but Sanctum-based flows will silently degrade to token auth."
+      },
+      {
+        "endpoint": "resources/views/layouts/app.blade.php + layouts/portal.blade.php",
+        "issue": "Tailwind is loaded via cdn.tailwindcss.com — this prints a production warning to every browser console and adds startup latency."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Login via headless browser through the Cloudflare-fronted preview",
+        "issue": "After the :80 redirect fix, HTTP-level login works end-to-end (verified via pytest requests session on all 5 roles and all admin pages). However Playwright/Chromium sees the Cloudflare edge inject cf_clearance/__cf_bm cookies and rewrite the app's session cookie flags (Secure=True, SameSite=None) instead of the SESSION_SECURE_COOKIE=false/SameSite=lax configured in .env. In the browser context this occasionally causes the post-login GET /dashboard to bounce back to /login as if the session was lost, so scripted UI verification of the portal KPI/table selectors could not be completed. Real end-user browsers should follow the same edge cookie rewrite and are expected to work, but this needs manual browser verification. Not reproducible via curl/requests (Backend passes 70/70).",
+        "affected_selectors": ["[data-testid=\"portal-badge\"]", "[data-testid^=\"kpi-\"]", "[data-testid^=\"adv-campaign-\"]", "[data-testid^=\"drv-settlement-\"]", "[data-testid^=\"own-auto-\"]", "[data-testid^=\"tech-install-\"]"]
+      }
+    ],
+    "design_issues": [
+      {"screen": "All pages", "issues": ["Tailwind CDN production warning visible in browser console."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_autoads.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Manually verify in a real desktop browser that admin/advertiser/driver/owner/technician can complete the full login → portal → dispute-submit flow now that the :80 redirect bug is fixed. If real browsers also drop the session on the /login → /dashboard redirect, set SESSION_SECURE_COOKIE=true and SESSION_SAME_SITE=none in laravel/.env to match what the Cloudflare edge is already forcing on the wire (and add Trusted-Proxy scheme handling), then bounce php-fpm.",
+    "Update SANCTUM_STATEFUL_DOMAINS in laravel/.env to include fleet-ads-pro.preview.emergentagent.com.",
+    "Install Tailwind via a build step (Vite) instead of cdn.tailwindcss.com to remove the production warning."
+  ],
+  "critical_code_review_comments": [
+    "bootstrap/app.php originally used trustProxies(at: '*') with no explicit headers mask — for Laravel 11/12 that trusts everything including X-Forwarded-Port=80 coming from the ingress, which is what produced the :80 redirect bug. Even with the AppServiceProvider forceScheme/forceRootUrl workaround now in place, it is worth pinning the trusted headers explicitly and dropping HEADER_X_FORWARDED_PORT.",
+    "laravel/.env APP_URL was pointing at an obsolete preview hostname — any queue jobs / mailables / signed URLs generated before this run would have baked in the wrong domain.",
+    "config/session.php values (SESSION_SECURE_COOKIE=false, SESSION_SAME_SITE=lax) do not match what the Cloudflare edge actually serves (Secure + SameSite=None). This mismatch is fragile.",
+    "resources/views/api/docs.blade.php + all app/portal layouts use cdn.tailwindcss.com — flagged as 'should not be used in production' by Tailwind itself.",
+    "app/Http/Controllers/Api/DeviceApiController.php ambiguous-status SQL fix (whereIn('campaigns.status', ...)) is verified via /api/v1/device/campaigns returning 200 with success:true — good.",
+    "storage/logs write permission fix confirmed — no 'stream could not be opened' errors observed in any of the 46 admin pages, 4 detail pages, or 6 error markers scanned."
+  ],
+  "updated_files": [
+    "/app/laravel/.env  (APP_URL → https://fleet-ads-pro.preview.emergentagent.com)",
+    "/app/laravel/app/Providers/AppServiceProvider.php  (URL::forceScheme('https') + URL::forceRootUrl(config('app.url')) in boot())",
+    "/app/laravel/bootstrap/app.php  (trustProxies now sets an explicit headers mask; HEADER_X_FORWARDED_PORT excluded)",
+    "/app/backend/tests/test_autoads.py  (new pytest suite, 70 cases)"
+  ],
+  "success_rate": {"backend": "100% (70/70)", "frontend": "HTTP-level: 100% for all 5 roles and 46 admin routes; Playwright browser flow: blocked by Cloudflare-edge cookie rewrite (see integration_issues)"},
+  "test_credentials": "See /app/memory/test_credentials.md — all Admin@123.",
+  "seed_data_creation": "Test suite creates a throwaway user 'TEST_user_<epoch>@autoads.test' via /users POST to verify the flash-success path; users are left in DB (harmless, prefixed TEST_).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The Laravel monolith at fleet-ads-pro.preview.emergentagent.com is served through Cloudflare + nginx (listening on 9000) + php-fpm. pytest suite at /app/backend/tests/test_autoads.py runs in ~18s and exercises login, admin routes, portals, Users/Roles CRUD, Swagger, REST, and the full Device API chain — use it as the regression baseline. If you rerun the device chain and see 401 on /device/authenticate, cycle through DEV-00004 / DEV-00005 / DEV-00006+ UUIDs (each device pairs once per token-reset). Playwright UI runs are unreliable through Cloudflare edge (session cookie appears to be dropped between /login and /dashboard) — prefer HTTP-level assertions with requests until SESSION_SECURE_COOKIE/SESSION_SAME_SITE are aligned with the edge (see action_items).",
+  "rca_of_the_issue": "Root cause of the :80 redirect bug: (1) laravel/.env APP_URL still pointed at a stale preview host, so config('app.url') did not match the request host; (2) bootstrap/app.php's trustProxies() call trusted ALL X-Forwarded-* headers by default including X-Forwarded-Port=80 sent by the ingress; combined, Laravel's URL generator produced 'https://<host>:80/<path>' for every redirect. Reproduction: curl -sI -X POST https://fleet-ads-pro.preview.emergentagent.com/login -d '_token=...&email=admin@autoads.test&password=Admin@123' shows Location with :80. Mitigation applied: force scheme HTTPS and force root URL from APP_URL in AppServiceProvider::boot; also updated APP_URL and tightened TrustProxies headers mask. Verification: curl now returns Location: https://fleet-ads-pro.preview.emergentagent.com/dashboard (no port)."
+}

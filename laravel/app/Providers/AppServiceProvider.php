@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,6 +15,14 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Behind HTTPS ingress the proxy forwards X-Forwarded-Port: 80 which makes
+        // Laravel emit "https://host:80/..." redirects — break the browser. Force HTTPS
+        // and root URL from APP_URL so generated URLs never carry an explicit port.
+        if (str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+            URL::forceRootUrl(config('app.url'));
+        }
+
         // Super admin bypasses all gates.
         Gate::before(function ($user) {
             return $user->isSuperAdmin() ? true : null;

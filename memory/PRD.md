@@ -41,6 +41,11 @@ A complete, production-ready Digital Out-of-Home (DOOH) advertising network plat
 - Fixed ambiguous `status` column in `campaigns()` many-to-many filter — in `DeviceController::showExtra` (web /devices/{id}) AND `DeviceApiController::campaigns` + `::content` (device API).
 - Created missing views: `admin.user-index`, `admin.user-form`, `admin.role-index`, `admin.role-form`, `integrations.api-apps`, `integrations.api-logs`, `integrations.webhooks`, all `portal.*`, `layouts.portal`.
 - Excluded non-existent `show` (users, roles) and `destroy` (roles) resource actions.
+- **CRITICAL (reverse-proxy):** Fixed `https://host:80/...` redirects that broke real browsers (ERR_SSL_PROTOCOL_ERROR). Root cause: stale `APP_URL` + `trustProxies` trusting `X-Forwarded-Port=80`. Fix: `APP_URL` set to current preview host; `URL::forceScheme('https')` + `URL::forceRootUrl()` in `AppServiceProvider::boot`; tightened TrustProxies header mask (dropped X_FORWARDED_PORT).
+- **CRITICAL (session):** Aligned session cookie with the HTTPS/Cloudflare edge — `SESSION_SECURE_COOKIE=true`, `SESSION_SAME_SITE=none` (browser was dropping the cookie between /login and /dashboard). Updated `SANCTUM_STATEFUL_DOMAINS` to current host.
+
+## Testing
+- pytest regression suite: `/app/backend/tests/test_autoads.py` — **70/70 pass** (all 5 roles login, 46 admin routes, 4 portals, Users/Roles CRUD, Swagger, REST API, full Device API chain). ~20s runtime.
 
 ## Integrations
 - SMTP / SMS / WhatsApp are **configurable MOCK adapters** (per user request) — admin-configurable settings, no real sending.
