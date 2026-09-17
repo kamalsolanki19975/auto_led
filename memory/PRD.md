@@ -63,11 +63,30 @@ A complete, production-ready Digital Out-of-Home (DOOH) advertising network plat
 - SMTP / SMS / WhatsApp are **configurable MOCK adapters** (per user request) — admin-configurable settings, no real sending.
 - No live third-party keys.
 
+## Major Upgrade — Phase 1 (Public Marketing Website) — June 2026 ✅
+- Dark-themed, responsive public marketing site (`resources/views/public/*`): Home, How It Works, Advertisers, Auto Owners, Technology, Analytics, Developers/API, Pricing, About, FAQ, Contact, Network, Solutions, Legal.
+- Dynamic stat counters (Alpine intersection observer) reading live DB values; SEO (sitemap.xml, robots.txt route, OG/Twitter meta); configurable branding (name/logo/tagline) via Settings → Branding.
+- Website Leads CRM: public contact form → `leads` table (status pipeline) → admin `/leads` inbox + admin notification.
+- Public routes namespaced `site.*` (advertiser marketing page at `/for-advertisers` to avoid `/advertisers` admin collision).
+
+## Major Upgrade — Phase 2 (Admin Panel UI/UX Redesign) — June 2026 ✅
+- Blueprint in `/app/design_guidelines.json` ("Operations Control Room": dark #070A10/#0B0F17/#111827 + amber #F59E0B, Barlow Condensed / Plus Jakarta Sans / JetBrains Mono).
+- **Admin shell** (`layouts/app.blade.php`): collapsible sidebar groups (Alpine `x-collapse`), collapse-to-icon-rail toggle persisted via `localStorage aa_rail`, breadcrumb, refined global search (Ctrl/Cmd+K focus), quick-create, notifications bell, user menu w/ role badge, and a **contextual help drawer** (Module Guide + Keyboard Shortcuts Alt+H + DOOH Glossary; Esc closes). Mobile off-canvas sidebar.
+- **Command Center dashboard** (`dashboard/index.blade.php`): 8 operational KPI cards + 8 financial KPI cards (icon chips, live-derived subtext), Revenue-vs-Expenses Chart.js line (amber/red themed), Tactical Alerts panel (severity + module links), Live Campaign Delivery table with gradient progress bars.
+- **Shared CRUD templates** redesigned (`resources/index|show|form.blade.php`): count pill, icon search, status filter + clear, icon action buttons (view/edit/delete), rich empty states, hero detail cards w/ status badge + Edit, sectioned forms.
+- **Bespoke views** brought to the new pattern: campaigns/invoices/settlements/payments list pages (search/filter/clear/row/action testids, guarded by `Route::has`), network detail pages (auto/device/driver/owner-show) got Edit buttons + heading style, leads-index heading + normalized `search-leads`/`row-leads-*` testids.
+- Sidebar nav testids normalized to hyphenated slugs (`nav-autos`, `nav-campaigns`, `nav-advertisements-approvals`, …).
+- **Cosmetic fixes**: deleted static `public/robots.txt` + Nginx `location = /robots.txt` now `try_files → index.php` (robots route returns **200**, not 404); Alpine collapse plugin added to public+admin layouts (FAQ accordion animates); footer social icons switched to inline SVGs (broken Lucide brand names gone); reset leftover branding test data (name→"AutoAds Network", tagline→default).
+- **Tests**: `/app/backend/tests/test_phase2_ui.py` (33) + regressions — **149 passed / 1 skipped** across phase2+public+core; `test_security.py` **20 passed**. Report: `/app/test_reports/iteration_4.json`.
+- **Known env limitation**: automated screenshot browser cannot log into admin (Cloudflare bot challenge on `/login`); verified via authenticated curl + pytest instead. Real users unaffected.
+
 ## Backlog / Roadmap
+- **P0 (next major)**: Phase 3 — Master Data section (consolidated masters w/ global search, filters, import/export); Phase 4 — Reporting Center/MIS (100+ reports); Phase 5 — API Center (dev portal, testing console, scoped keys, webhooks); Phase 6 — Notification & CMS Center (email templates, prefs, in-app bell, website CMS).
 - **P1**: Technician portal write-actions (start/complete installation, resolve ticket) directly from the portal.
 - **P1**: Advertiser self-service (request campaign, upload creative for approval) from portal.
 - **P2**: Dynamic settings UI polish for SMTP/SMS/WhatsApp mock adapters + "send test" flows.
 - **P2**: Seed sample Playlists (currently none seeded).
+- **P2**: Move Tailwind off `cdn.tailwindcss.com` to a Vite/CLI build (kills the prod-CDN console warning; carry-over).
 - **P2**: Rate-limit + API-key auth path (`apikey` middleware exists) documented in Swagger.
 - **P3**: Real provider wiring (Resend/SendGrid, Twilio) if/when keys are provided.
 

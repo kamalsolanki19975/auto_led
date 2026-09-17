@@ -2,9 +2,11 @@
 @section('title',$model->registration_number)
 @section('content')
 @php($m=fn($n)=>\App\Support\Fmt::money($n))
-<div class="flex items-center justify-between mb-6"><div><a href="{{ route('autos.index') }}" class="text-sm text-slate-400">← Autos</a>
-<h1 class="text-3xl font-bold mt-1">{{ $model->registration_number }} <span class="text-slate-500 text-lg mono">{{ $model->code }}</span></h1></div>
-<x-badge :status="$model->status"/></div>
+<div class="mb-6"><a href="{{ route('autos.index') }}" class="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-amber-400 transition"><i data-lucide="arrow-left" class="w-4 h-4"></i>Autos</a>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2">
+  <div class="flex items-center gap-3"><h1 class="font-heading text-2xl sm:text-3xl font-extrabold uppercase tracking-tight">{{ $model->registration_number }} <span class="text-slate-500 text-lg mono normal-case">{{ $model->code }}</span></h1><x-badge :status="$model->status"/></div>
+  <a href="{{ route('autos.edit',$model) }}" class="btn btn-primary" data-testid="edit-autos-detail"><i data-lucide="pencil" class="w-4 h-4"></i>Edit</a>
+</div></div>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
   <div class="card p-4"><span class="text-xs text-slate-400 uppercase">Valid Runtime</span><div class="mono text-2xl font-bold">{{ \App\Support\Fmt::duration($runtimeSeconds) }}</div></div>
   <div class="card p-4"><span class="text-xs text-slate-400 uppercase">Valid Plays</span><div class="mono text-2xl font-bold">{{ number_format($validPlays) }}</div></div>

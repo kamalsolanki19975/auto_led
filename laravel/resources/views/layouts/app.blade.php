@@ -112,7 +112,7 @@
           <div x-show="collapsed || open" x-collapse.duration.200ms class="mt-0.5 space-y-0.5">
             @foreach($group['items'] as $it)
               @php $isActive = request()->routeIs(str_replace('.index','',$it['route']).'*'); @endphp
-              <a href="{{ route($it['route']) }}" data-testid="nav-{{ $it['route'] }}" title="{{ $it['label'] }}"
+              <a href="{{ route($it['route']) }}" data-testid="nav-{{ str_replace(['.index','.'], ['','-'], $it['route']) }}" title="{{ $it['label'] }}"
                  class="nav-a flex items-center gap-3 px-2.5 py-2 text-[.85rem] text-slate-400 hover:text-white hover:bg-white/5 {{ $isActive ? 'active' : '' }}"
                  :class="collapsed && 'justify-center px-0'">
                 <i data-lucide="{{ $it['icon'] }}" class="w-[1.05rem] h-[1.05rem] shrink-0"></i>

@@ -1,7 +1,11 @@
 @extends('layouts.app')
 @section('title',$model->name)
 @section('content')
-<div class="mb-6"><a href="{{ route('owners.index') }}" class="text-sm text-slate-400">← Owners</a><h1 class="text-3xl font-bold mt-1">{{ $model->name }} <span class="mono text-slate-500 text-lg">{{ $model->code }}</span></h1></div>
+<div class="mb-6"><a href="{{ route('owners.index') }}" class="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-amber-400 transition"><i data-lucide="arrow-left" class="w-4 h-4"></i>Owners</a>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2">
+  <h1 class="font-heading text-2xl sm:text-3xl font-extrabold uppercase tracking-tight">{{ $model->name }} <span class="mono text-slate-500 text-lg normal-case">{{ $model->code }}</span></h1>
+  <a href="{{ route('owners.edit',$model) }}" class="btn btn-primary" data-testid="edit-owners-detail"><i data-lucide="pencil" class="w-4 h-4"></i>Edit</a>
+</div></div>
 <div class="card p-6 mb-6"><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
   @foreach(['mobile'=>'Mobile','email'=>'Email','pan'=>'PAN','upi'=>'UPI'] as $k=>$l)<div><span class="text-slate-400 text-xs uppercase">{{ $l }}</span><div>{{ $model->$k ?? '—' }}</div></div>@endforeach
 </div></div>

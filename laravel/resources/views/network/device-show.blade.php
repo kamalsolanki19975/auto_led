@@ -2,9 +2,14 @@
 @section('title',$model->code)
 @section('content')
 @php($m=fn($n)=>\App\Support\Fmt::money($n))
-<div class="flex items-center justify-between mb-6"><div><a href="{{ route('devices.index') }}" class="text-sm text-slate-400">← Devices</a>
-<h1 class="text-3xl font-bold mt-1">{{ $model->code }}</h1><p class="mono text-xs text-slate-500">{{ $model->device_uuid }}</p></div>
-<span class="{{ $online?'text-emerald-400':'text-rose-400' }} font-semibold flex items-center gap-2"><span class="h-2 w-2 rounded-full {{ $online?'bg-emerald-500':'bg-rose-500' }}"></span>{{ $online?'Online':'Offline' }}</span></div>
+<div class="mb-6"><a href="{{ route('devices.index') }}" class="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-amber-400 transition"><i data-lucide="arrow-left" class="w-4 h-4"></i>Devices</a>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2">
+  <div><h1 class="font-heading text-2xl sm:text-3xl font-extrabold uppercase tracking-tight">{{ $model->code }}</h1><p class="mono text-xs text-slate-500 mt-1">{{ $model->device_uuid }}</p></div>
+  <div class="flex items-center gap-3">
+    <span class="{{ $online?'text-emerald-400':'text-rose-400' }} font-semibold flex items-center gap-2 text-sm"><span class="h-2 w-2 rounded-full {{ $online?'bg-emerald-500':'bg-rose-500' }}"></span>{{ $online?'Online':'Offline' }}</span>
+    <a href="{{ route('devices.edit',$model) }}" class="btn btn-primary" data-testid="edit-devices-detail"><i data-lucide="pencil" class="w-4 h-4"></i>Edit</a>
+  </div>
+</div></div>
 <div class="flex flex-wrap gap-2 mb-6">
   <form action="{{ route('devices.command',$model) }}" method="POST" class="inline">@csrf<input type="hidden" name="command" value="restart"><button class="btn btn-sec"><i data-lucide="power" class="w-4 h-4"></i>Restart</button></form>
   <form action="{{ route('devices.command',$model) }}" method="POST" class="inline">@csrf<input type="hidden" name="command" value="sync"><button class="btn btn-sec">Sync</button></form>

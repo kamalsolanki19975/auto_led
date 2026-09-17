@@ -5,10 +5,10 @@
 
 <div class="flex items-start justify-between mb-2">
   <div>
-    <h1 class="text-3xl font-bold">Website Leads</h1>
-    <p class="text-slate-400 text-sm">Enquiries captured from the public website contact form.</p>
+    <h1 class="font-heading text-2xl sm:text-3xl font-extrabold uppercase tracking-tight">Website Leads</h1>
+    <p class="text-slate-400 text-sm mt-1">Enquiries captured from the public website contact form.</p>
   </div>
-  <span class="mono text-sm text-slate-400">{{ $total }} total</span>
+  <span class="pill bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1">{{ $total }} total</span>
 </div>
 
 {{-- module help --}}
@@ -37,7 +37,7 @@
 <div class="card p-4 mb-4">
   <form method="GET" class="flex flex-wrap gap-3 items-center">
     @if(request('status'))<input type="hidden" name="status" value="{{ request('status') }}">@endif
-    <input name="q" value="{{ request('q') }}" placeholder="Search name, email, company, code…" class="inp max-w-xs" data-testid="lead-search">
+    <input name="q" value="{{ request('q') }}" placeholder="Search name, email, company, code…" class="inp max-w-xs" data-testid="search-leads">
     <select name="type" class="inp max-w-[180px]" data-testid="lead-type-filter">
       <option value="">All types</option>
       @foreach(['advertiser'=>'Advertiser','auto_owner'=>'Auto Owner','general'=>'General'] as $v=>$l)<option value="{{ $v }}" @selected(request('type')===$v)>{{ $l }}</option>@endforeach
@@ -50,7 +50,7 @@
   <table class="grid"><thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Contact</th><th>Status</th><th>Owner</th><th>Received</th></tr></thead>
   <tbody>
   @forelse($rows as $lead)
-    <tr class="cursor-pointer" onclick="window.location='{{ route('leads.show',$lead) }}'" data-testid="lead-row-{{ $lead->id }}">
+    <tr class="cursor-pointer" onclick="window.location='{{ route('leads.show',$lead) }}'" data-testid="row-leads-{{ $lead->id }}">
       <td class="mono text-xs text-brand">{{ $lead->code }}</td>
       <td class="font-semibold text-white">{{ $lead->name }}<div class="text-xs text-slate-500">{{ $lead->company ?? '—' }}</div></td>
       <td class="text-xs text-slate-300 capitalize">{{ str_replace('_',' ',$lead->type) }}</td>
