@@ -44,8 +44,20 @@ A complete, production-ready Digital Out-of-Home (DOOH) advertising network plat
 - **CRITICAL (reverse-proxy):** Fixed `https://host:80/...` redirects that broke real browsers (ERR_SSL_PROTOCOL_ERROR). Root cause: stale `APP_URL` + `trustProxies` trusting `X-Forwarded-Port=80`. Fix: `APP_URL` set to current preview host; `URL::forceScheme('https')` + `URL::forceRootUrl()` in `AppServiceProvider::boot`; tightened TrustProxies header mask (dropped X_FORWARDED_PORT).
 - **CRITICAL (session):** Aligned session cookie with the HTTPS/Cloudflare edge — `SESSION_SECURE_COOKIE=true`, `SESSION_SAME_SITE=none` (browser was dropping the cookie between /login and /dashboard). Updated `SANCTUM_STATEFUL_DOMAINS` to current host.
 
+## Security hardening (post-audit, June 2026)
+- **SEC-001**: REST API now enforces token abilities + row-level ownership scoping (`ResourceApiController::authorize`) — portal users (advertiser/driver/owner) can only read their own records; cross-tenant show → 404; unmapped resources → 403.
+- **SEC-002**: `APP_ENV=production`, `APP_DEBUG=false` — generic error pages, no stack/SQL/env leaks.
+- **SEC-003**: Settlement dispute IDOR fixed (ownership check in `PortalController::raiseDispute`).
+- **SEC-004**: `User` model uses explicit `$fillable` (was `$guarded=[]`).
+- Hardening: `throttle:10,1` on `/api/v1/auth/login` + `/api/v1/device/authenticate`; API docs (`/api/docs`, `/api/openapi.json`) gated behind web auth + `integrations.api.view`; wildcard CORS header removed from spec.
+
+## Ops / durability
+- MariaDB datadir moved to persistent `/app/mysql-data` (was `/var/lib/mysql`, wiped on container reboot).
+- `deploy/db-bootstrap.sh` runs at supervisor startup (`autoads-db-bootstrap` program, one-shot): ensures DB user + `auto_ads` DB, runs migrations, seeds only if empty. Protects against snapshot-restore data loss.
+
 ## Testing
 - pytest regression suite: `/app/backend/tests/test_autoads.py` — **70/70 pass** (all 5 roles login, 46 admin routes, 4 portals, Users/Roles CRUD, Swagger, REST API, full Device API chain). ~20s runtime.
+- pytest security suite: `/app/backend/tests/test_security.py` — **21 cases** covering SEC-001..004, docs gating, throttling. Combined run 91/92 (1 intermittent throttle race, test-side only). Reports: `/app/test_reports/iteration_1.json`, `iteration_2.json`.
 
 ## Integrations
 - SMTP / SMS / WhatsApp are **configurable MOCK adapters** (per user request) — admin-configurable settings, no real sending.

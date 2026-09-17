@@ -14,10 +14,11 @@ OWNER = ("owner@autoads.test", "Admin@123")
 TECH = ("tech@autoads.test", "Admin@123")
 
 DEVICES = [
-    ("DEV-00003", "a41e30f7-ac37-42a3-9132-3ca6d8f1fdb7"),
-    ("DEV-00004", "c53955a6-09f8-4367-bf03-db05509b6039"),
-    ("DEV-00005", "804c240f-a799-4c86-b304-017cac06987c"),
-    ("DEV-00006", None),  # placeholder
+    ("DEV-00001", "3a9b1815-a417-4963-9839-29e152d23b63"),
+    ("DEV-00002", "e6b682ff-3b47-4c9b-9e4f-3a7e6e4bda9f"),
+    ("DEV-00004", "06168692-f44d-4044-bc15-128460a1a98b"),
+    ("DEV-00005", "6e1f13ad-4405-4b5c-8f05-6d4e95b7e7bb"),
+    ("DEV-00006", "5fd53c34-878a-4c97-809e-bb5cbe2b1ad3"),
 ]
 
 
@@ -189,20 +190,31 @@ def test_roles_index_and_forms(admin_session):
     assert r3.status_code == 200
 
 
-# ---------------- Swagger / OpenAPI ---------------- #
-def test_swagger_ui():
-    r = requests.get(f"{BASE}/api/docs", timeout=30)
+# ---------------- Swagger / OpenAPI (now auth-gated) ---------------- #
+def test_swagger_ui_requires_auth():
+    r = requests.get(f"{BASE}/api/docs", timeout=30, allow_redirects=False)
+    # Guests must not see docs — 401 (JSON) or 302 redirect to login
+    assert r.status_code in (401, 302, 403), f"unexpected {r.status_code}"
+
+
+def test_openapi_json_requires_auth():
+    r = requests.get(f"{BASE}/api/openapi.json", timeout=30, allow_redirects=False,
+                     headers={"Accept": "application/json"})
+    assert r.status_code in (401, 302, 403), f"unexpected {r.status_code}"
+
+
+def test_swagger_ui_admin_session(admin_session):
+    r = admin_session.get(f"{BASE}/api/docs", timeout=30)
     assert r.status_code == 200
     assert "AutoAds Network API" in r.text or "swagger" in r.text.lower()
 
 
-def test_openapi_json():
-    r = requests.get(f"{BASE}/api/openapi.json", timeout=30)
+def test_openapi_json_admin_session(admin_session):
+    r = admin_session.get(f"{BASE}/api/openapi.json", timeout=30)
     assert r.status_code == 200
     spec = r.json()
-    assert spec.get("openapi", "").startswith("3."), spec.get("openapi")
-    paths = spec.get("paths", {})
-    assert len(paths) >= 16, f"Expected >=16 paths, got {len(paths)}"
+    assert spec.get("openapi", "").startswith("3.")
+    assert len(spec.get("paths", {})) >= 16
 
 
 # ---------------- REST API ---------------- #
