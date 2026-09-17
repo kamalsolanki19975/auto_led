@@ -4,7 +4,8 @@
     "theme_mode": "dark",
     "design_archetype": "The Performance Pro & Tactical Digital DOOH (Operations Control Room)",
     "brand_motto": "Turn Every Auto Ride Into an Advertising Opportunity",
-    "stack": "Laravel Blade + Tailwind CSS (CDN) + Alpine.js + Lucide Icons + Chart.js"
+    "stack": "Laravel 12 + Blade Templates + Tailwind CSS (CDN) + Alpine.js + Lucide Icons + Chart.js",
+    "phase": "Phase 2: Complete Admin Panel UI/UX Redesign (Shell + Command Center Analytics + Shared CRUD + Drawers)"
   },
   "colors": {
     "brand_primary": {
@@ -12,19 +13,23 @@
       "hover": "#D97706",
       "active": "#B45309",
       "light": "#FEF3C7",
-      "glow": "rgba(245, 158, 11, 0.25)"
+      "glow": "rgba(245, 158, 11, 0.25)",
+      "border_accent": "#F59E0B33"
     },
     "background": {
       "base": "#070A10",
       "surface_dark": "#0B0F17",
       "card": "#111827",
       "card_hover": "#1F2937",
-      "elevated": "#1A2333"
+      "elevated": "#1A2333",
+      "sidebar": "#090D14",
+      "header": "#0B0F17EE"
     },
     "borders": {
       "subtle": "#1F2937",
       "active": "#374151",
-      "highlight": "#F59E0B33"
+      "highlight": "#F59E0B40",
+      "focus": "#F59E0B80"
     },
     "text": {
       "primary": "#F9FAFB",
@@ -34,10 +39,36 @@
       "inverse": "#070A10"
     },
     "status": {
-      "online_green": "#10B981",
-      "live_pulse": "#F59E0B",
-      "tech_blue": "#3B82F6",
-      "cyan_signal": "#06B6D4"
+      "online_green": {
+        "bg": "#064E3B",
+        "text": "#34D399",
+        "border": "#05966940",
+        "hex": "#10B981"
+      },
+      "offline_red": {
+        "bg": "#7F1D1D",
+        "text": "#FCA5A5",
+        "border": "#DC262640",
+        "hex": "#EF4444"
+      },
+      "warning_amber": {
+        "bg": "#78350F",
+        "text": "#FCD34D",
+        "border": "#D9770640",
+        "hex": "#F59E0B"
+      },
+      "info_blue": {
+        "bg": "#1E3A8A",
+        "text": "#93C5FD",
+        "border": "#2563EB40",
+        "hex": "#3B82F6"
+      },
+      "purple_accent": {
+        "bg": "#4C1D95",
+        "text": "#C4B5FD",
+        "border": "#7C3AED40",
+        "hex": "#8B5CF6"
+      }
     }
   },
   "typography": {
@@ -47,93 +78,317 @@
       "mono": "'JetBrains Mono', monospace"
     },
     "scale": {
-      "hero_h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight uppercase leading-none",
-      "section_h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight uppercase",
-      "subsection_h3": "text-xl sm:text-2xl font-semibold tracking-tight",
-      "card_h4": "text-lg sm:text-xl font-semibold",
-      "body_lg": "text-lg leading-relaxed text-gray-300",
-      "body": "text-base leading-relaxed text-gray-400",
+      "admin_title": "text-2xl sm:text-3xl font-extrabold tracking-tight uppercase font-['Barlow_Condensed'] text-white",
+      "section_h2": "text-xl sm:text-2xl font-bold tracking-tight uppercase font-['Barlow_Condensed'] text-gray-100",
+      "card_h3": "text-base font-semibold text-gray-200 font-['Plus_Jakarta_Sans']",
+      "kpi_value": "text-2xl sm:text-3xl font-extrabold font-['JetBrains_Mono'] tracking-tight text-white",
+      "kpi_label": "text-xs font-mono uppercase tracking-wider text-gray-400",
+      "table_cell": "text-sm text-gray-300 font-['Plus_Jakarta_Sans']",
+      "mono_data": "text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20",
       "caption": "text-xs font-mono uppercase tracking-widest text-amber-500"
     }
   },
-  "layout_and_spacing": {
-    "container_padding": "px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto",
-    "section_spacing": "py-16 md:py-24 border-b border-gray-800/60",
-    "bento_grid": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-6 md:gap-8",
-    "card_padding": "p-6 md:p-8 rounded-2xl bg-[#111827] border border-gray-800 hover:border-amber-500/40 transition-all duration-300"
-  },
-  "header_and_navigation": {
-    "type": "Sticky Header with Blur Glassmorphism",
-    "container": "fixed top-0 left-0 right-0 z-50 bg-[#0B0F17]/80 backdrop-blur-xl border-b border-gray-800/80",
-    "logo": "Configurable dynamic logo + Brand Name text lockup with amber accent badge",
-    "desktop_links": [
-      { "label": "Home", "href": "/" },
-      { "label": "How It Works", "href": "/how-it-works" },
-      { "label": "Advertisers", "href": "/advertisers" },
-      { "label": "Auto Owners", "href": "/auto-owners" },
-      { "label": "Technology", "href": "/technology" },
-      { "label": "Analytics", "href": "/analytics" },
-      { "label": "API", "href": "/api-docs" },
-      { "label": "Pricing", "href": "/pricing" },
-      { "label": "About", "href": "/about" },
-      { "label": "Contact", "href": "/contact" }
-    ],
-    "ctas": {
-      "secondary": { "label": "Login", "href": "/login", "class": "text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition" },
-      "primary": { "label": "Start Advertising", "href": "/register?role=advertiser", "class": "bg-amber-500 hover:bg-amber-600 text-black font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 text-sm transition" }
+  "admin_shell_architecture": {
+    "sidebar": {
+      "width_expanded": "w-64",
+      "width_collapsed": "w-20",
+      "bg": "bg-[#090D14] border-r border-gray-800/80 shrink-0 h-screen sticky top-0 flex flex-col z-40 transition-all duration-300",
+      "alpine_state": "x-data=\"{ collapsed: false, openGroups: ['dashboard', 'network', 'advertising'], mobileOpen: false }\"",
+      "header_brand": "Flex block with AutoAds pulse indicator, brand title ('AUTOADS DOOH'), and rail collapse trigger button",
+      "groups": [
+        {
+          "id": "dashboard",
+          "label": "COMMAND CENTER",
+          "icon": "layout-dashboard",
+          "items": [
+            { "name": "Overview Analytics", "route": "/admin/dashboard", "icon": "activity", "badge": "LIVE" }
+          ]
+        },
+        {
+          "id": "network",
+          "label": "FLEET & HARDWARE",
+          "icon": "truck",
+          "items": [
+            { "name": "Autos Registry", "route": "/admin/autos", "icon": "truck" },
+            { "name": "Auto Owners", "route": "/admin/owners", "icon": "users" },
+            { "name": "Drivers", "route": "/admin/drivers", "icon": "user-check" },
+            { "name": "Digital Screens", "route": "/admin/screens", "icon": "monitor", "badge": "1,420" },
+            { "name": "IoT Devices", "route": "/admin/devices", "icon": "cpu" },
+            { "name": "SIM Cards & 4G", "route": "/admin/sims", "icon": "wifi" }
+          ]
+        },
+        {
+          "id": "advertising",
+          "label": "ADVERTISING OPS",
+          "icon": "megaphone",
+          "items": [
+            { "name": "Advertisers", "route": "/admin/advertisers", "icon": "briefcase" },
+            { "name": "Ads Library", "route": "/admin/ads", "icon": "film" },
+            { "name": "Creative Approvals", "route": "/admin/approvals", "icon": "check-square", "badge": "12" },
+            { "name": "Campaigns", "route": "/admin/campaigns", "icon": "target" },
+            { "name": "Playlists & Sync", "route": "/admin/playlists", "icon": "list-music" },
+            { "name": "Proof of Play Logs", "route": "/admin/proof-of-play", "icon": "file-check" }
+          ]
+        },
+        {
+          "id": "operations",
+          "label": "FIELD OPERATIONS",
+          "icon": "wrench",
+          "items": [
+            { "name": "Screen Installations", "route": "/admin/installations", "icon": "hard-drive" },
+            { "name": "Asset Management", "route": "/admin/assets", "icon": "box" },
+            { "name": "Maintenance Tickets", "route": "/admin/maintenance", "icon": "alert-triangle" },
+            { "name": "Hardware Warranty", "route": "/admin/warranty", "icon": "shield-check" },
+            { "name": "Hardware Vendors", "route": "/admin/vendors", "icon": "shopping-bag" }
+          ]
+        },
+        {
+          "id": "finance",
+          "label": "FINANCIAL ENGINE",
+          "icon": "dollar-sign",
+          "items": [
+            { "name": "Revenue Overview", "route": "/admin/finance/revenue", "icon": "trending-up" },
+            { "name": "Client Invoices", "route": "/admin/finance/invoices", "icon": "file-text" },
+            { "name": "Payments Received", "route": "/admin/finance/payments", "icon": "credit-card" },
+            { "name": "Operating Expenses", "route": "/admin/finance/expenses", "icon": "receipt" },
+            { "name": "Ad Rate Cards", "route": "/admin/finance/rate-cards", "icon": "tag" },
+            { "name": "Driver Earnings", "route": "/admin/finance/driver-earnings", "icon": "wallet" },
+            { "name": "Weekly Settlements", "route": "/admin/finance/settlements", "icon": "arrow-left-right" },
+            { "name": "Network Profitability", "route": "/admin/finance/profitability", "icon": "pie-chart" }
+          ]
+        },
+        {
+          "id": "reports",
+          "label": "INTELLIGENCE & REPORTS",
+          "icon": "bar-chart-3",
+          "items": [
+            { "name": "Impression Analytics", "route": "/admin/reports/impressions", "icon": "eye" },
+            { "name": "Geo Density Heatmap", "route": "/admin/reports/geo-heatmap", "icon": "map" },
+            { "name": "Fleet Uptime Report", "route": "/admin/reports/uptime", "icon": "clock" }
+          ]
+        },
+        {
+          "id": "integrations",
+          "label": "DEVELOPER & API",
+          "icon": "code-2",
+          "items": [
+            { "name": "API Applications", "route": "/admin/integrations/apps", "icon": "key" },
+            { "name": "Webhooks Engine", "route": "/admin/integrations/webhooks", "icon": "webhook" },
+            { "name": "API Audit Logs", "route": "/admin/integrations/logs", "icon": "terminal" }
+          ]
+        },
+        {
+          "id": "crm",
+          "label": "INBOUND LEADS",
+          "icon": "user-plus",
+          "items": [
+            { "name": "Website CRM Leads", "route": "/admin/crm/leads", "icon": "inbox" }
+          ]
+        },
+        {
+          "id": "administration",
+          "label": "SYSTEM ADMIN",
+          "icon": "shield-alert",
+          "items": [
+            { "name": "Console Users", "route": "/admin/users", "icon": "user-cog" },
+            { "name": "Roles & Permissions", "route": "/admin/roles", "icon": "lock" },
+            { "name": "System Notifications", "route": "/admin/notifications", "icon": "bell" },
+            { "name": "Outbound Email Logs", "route": "/admin/email-logs", "icon": "mail" },
+            { "name": "Security Audit Trail", "route": "/admin/audit-logs", "icon": "shield" },
+            { "name": "Network Settings", "route": "/admin/settings", "icon": "settings" }
+          ]
+        }
+      ],
+      "active_link_style": "bg-amber-500/10 text-amber-400 border-r-2 border-amber-500 font-semibold shadow-[0_0_15px_rgba(245,158,11,0.15)]",
+      "inactive_link_style": "text-gray-400 hover:text-white hover:bg-gray-800/60 transition-colors"
     },
-    "mobile_menu": "Alpine.js responsive drawer overlay with keyboard navigation and trap focus"
-  },
-  "hero_visual_composition": {
-    "auto_with_digital_screen": {
-      "concept": "Modern auto-rickshaw cabin perspective highlighting a vibrant 10.1\" passenger-facing digital display screen mounted behind driver seat.",
-      "rendering_technique": "Layered CSS/SVG composition with dark auto silhouette, neon driver cockpit backlight, active high-definition ad canvas mock on screen, 4G cloud sync beacon animation, and passenger viewing angle glow.",
-      "hud_elements": [
-        "Live GPS coordinates ticker: 12.9716° N, 77.5946° E (Bangalore Core Network)",
-        "Screen status tag: ONLINE | 1080p 60FPS | Proof of Play Syncing",
-        "Impression counter chip: 1,420 impressions today in transit"
-      ]
+    "header": {
+      "container": "sticky top-0 z-30 bg-[#0B0F17]/90 backdrop-blur-md border-b border-gray-800/80 h-16 px-4 md:px-8 flex items-center justify-between gap-4",
+      "elements": {
+        "left_section": "Mobile sidebar toggle button + Active page breadcrumb path with Lucide chevron",
+        "global_search": {
+          "placeholder": "Search screens, autos, advertisers, invoices... (Ctrl+K)",
+          "class": "bg-[#111827] border border-gray-800 rounded-xl px-3.5 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 w-64 lg:w-96 flex items-center justify-between shadow-inner"
+        },
+        "quick_create": "Alpine dropdown (+ Quick Action) with items: + New Campaign, + Register Auto, + Provision Screen, + Issue Invoice",
+        "notifications_bell": "Icon with active amber pulse badge + Alpine slide-down menu showing unread system alerts, offline screen notices, and pending approvals",
+        "context_help_btn": "Tactical help icon button triggering Alpine slide-over contextual help drawer",
+        "user_profile": "Avatar with online green dot, Admin Name ('Operations Commander'), Role Badge ('SUPER ADMIN'), and dropdown with Profile, System Health, and Sign Out"
+      }
     }
   },
-  "key_components": {
-    "dynamic_stat_counters": {
-      "fields": ["Active Autos", "Digital Screens", "Coverage Cities", "Campaigns Delivered"],
-      "behavior": "Alpine.js intersection observer counter animation reading live values from database API, with fallback skeleton loaders during fetch."
-    },
-    "step_flow_diagram": {
-      "steps": [
-        "1. Advertiser creates campaign",
-        "2. Smart Geo-Targeting",
-        "3. Cloud Sync to Auto Screens",
-        "4. Passenger Experience & Playback",
-        "5. Proof-of-Play & Real-Time Analytics"
+  "analytics_dashboard_command_center": {
+    "kpi_grid_operations": {
+      "layout": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6",
+      "cards": [
+        { "title": "Total Autos", "value": "1,450", "trend": "+12.4%", "trend_type": "positive", "subtext": "Registered Fleet", "icon": "truck" },
+        { "title": "Active Autos", "value": "1,382", "trend": "95.3%", "trend_type": "positive", "subtext": "On Road Right Now", "icon": "navigation" },
+        { "title": "Screens Online", "value": "1,364", "trend": "98.7%", "trend_type": "positive", "subtext": "18 Offline Screens", "icon": "monitor" },
+        { "title": "Active Campaigns", "value": "48", "trend": "12 Pending", "trend_type": "neutral", "subtext": "Running Spots", "icon": "target" },
+        { "title": "Active SIM Cards", "value": "1,410", "trend": "99.1%", "trend_type": "positive", "subtext": "4G LTE Connected", "icon": "wifi" },
+        { "title": "Devices Offline", "value": "18", "trend": "-3 today", "trend_type": "warning", "subtext": "Requires Maintenance", "icon": "alert-triangle" }
       ]
     },
-    "faq_accordion": {
-      "categories": ["For Advertisers", "For Fleet Owners & Drivers", "Hardware & Technology", "Billing & Analytics"],
-      "interactivity": "Alpine.js single/multi expandable accordion panels with Lucide chevron icons"
+    "kpi_grid_financials": {
+      "layout": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8",
+      "cards": [
+        { "title": "Today Revenue", "value": "₹1,42,800", "trend": "+18.2%", "trend_type": "positive", "icon": "indian-rupee" },
+        { "title": "Monthly Revenue", "value": "₹38,50,000", "trend": "+24.0%", "trend_type": "positive", "icon": "trending-up" },
+        { "title": "Monthly Expenses", "value": "₹14,20,000", "trend": "Fleet + 4G Data", "trend_type": "neutral", "icon": "receipt" },
+        { "title": "Net Operating Profit", "value": "₹24,30,000", "trend": "63.1% Margin", "trend_type": "positive", "icon": "pie-chart" },
+        { "title": "Driver Payable", "value": "₹8,45,000", "trend": "Due Friday", "trend_type": "warning", "icon": "wallet" },
+        { "title": "Receivables / Payables", "value": "₹4.2L / ₹1.1L", "trend": "Net +3.1L", "trend_type": "neutral", "icon": "arrow-left-right" }
+      ]
     },
-    "pricing_cards": {
-      "features": ["Monthly ad spots", "Targeted cities/routes", "Proof-of-play reports", "API access"],
-      "action_cta": "Advertise With Us"
+    "main_chart": {
+      "title": "NETWORK REVENUE VS OPERATING EXPENSES (PAST 6 MONTHS)",
+      "type": "Chart.js Dual Line Chart with Area Fill",
+      "canvas_id": "revenueExpensesChart",
+      "height": "h-80",
+      "config_specs": {
+        "responsive": true,
+        "maintainAspectRatio": false,
+        "theme": {
+          "grid_color": "#1F2937",
+          "text_color": "#9CA3AF",
+          "revenue_line": "#F59E0B",
+          "revenue_bg": "rgba(245, 158, 11, 0.15)",
+          "expense_line": "#EF4444",
+          "expense_bg": "rgba(239, 68, 68, 0.15)"
+        }
+      }
+    },
+    "alerts_panel": {
+      "title": "TACTICAL OPERATIONAL ALERTS & ACTION CENTER",
+      "layout": "col-span-1 md:col-span-4 rounded-2xl bg-[#111827] border border-gray-800 p-6 shadow-xl",
+      "items": [
+        { "severity": "critical", "title": "Hardware Disconnect", "msg": "Screen #SCR-1088 (Auto KA-01-EQ-9081) offline for > 3 hours in Indiranagar zone.", "action": "Dispatch Technician", "time": "12m ago" },
+        { "severity": "warning", "title": "SIM Data Cap Warning", "msg": "14 Airtel IoT SIM cards reached 85% bandwidth quota limit.", "action": "Top-up Data Plan", "time": "45m ago" },
+        { "severity": "info", "title": "Creative Approval Pending", "msg": "New video creative 'Summer Sale 15s' submitted by Puma India needs approval.", "action": "Review Creative", "time": "1h ago" },
+        { "severity": "warning", "title": "Overdue Invoice Alert", "msg": "Invoice #INV-2026-089 (Titan Watches) overdue by 5 days (₹2,50,000).", "action": "Send Payment Reminder", "time": "3h ago" }
+      ]
+    },
+    "active_campaigns_table": {
+      "title": "LIVE AD CAMPAIGN DELIVERY PROGRESS",
+      "headers": ["CAMPAIGN / ADVERTISER", "TARGET ROUTE / ZONE", "DAILY IMPRESSIONS", "DELIVERY PROGRESS", "STATUS", "ACTIONS"],
+      "progress_bar_style": "w-full bg-gray-800 h-2 rounded-full overflow-hidden shadow-inner",
+      "progress_fill_style": "bg-gradient-to-r from-amber-500 to-emerald-400 h-full rounded-full transition-all duration-500"
+    }
+  },
+  "shared_crud_table_pattern": {
+    "template_file": "resources/views/admin/shared/index.blade.php",
+    "structure": {
+      "page_header": {
+        "layout": "flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6",
+        "title_area": "Heading with record count pill (e.g., '1,450 Records') + subtitle description",
+        "actions_area": "Export CSV/Excel button + Primary 'Create New' button with Lucide plus icon"
+      },
+      "summary_chips_row": "Grid of 4 mini metric cards summarizing active, pending, offline, or financial aggregates for the current module",
+      "filter_bar": {
+        "layout": "bg-[#111827] border border-gray-800 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shadow-lg",
+        "components": [
+          "Search input with magnifier icon & clear button",
+          "Status filter dropdown (All, Active, Offline, Pending, Archived)",
+          "Date range picker preset (Today, This Week, This Month, Custom)",
+          "Sorting selector (Newest First, Name A-Z, Highest Revenue)",
+          "Items per page selector (15, 25, 50, 100)"
+        ]
+      },
+      "data_table": {
+        "container": "bg-[#111827] border border-gray-800 rounded-2xl overflow-hidden shadow-2xl border-separate border-spacing-0",
+        "table_tag": "w-full text-left border-collapse",
+        "thead": "bg-[#090D14] text-xs font-mono uppercase tracking-wider text-gray-400 border-b border-gray-800 sticky top-0",
+        "tbody_row": "border-b border-gray-800/60 hover:bg-[#1A2333]/50 transition-colors duration-150 group",
+        "checkbox_selection": "Custom amber checkbox for bulk actions",
+        "row_actions": "Grouped flex container with Lucide icon buttons (View Details, Quick Edit, Delete/Deactivate with Alpine modal confirm)"
+      },
+      "pagination": {
+        "layout": "flex items-center justify-between px-6 py-4 bg-[#090D14] border-t border-gray-800 text-sm text-gray-400 font-mono",
+        "elements": "Showing 1 to 15 of 1,450 entries | Previous / Page Numbers / Next navigation pills"
+      }
+    }
+  },
+  "detail_and_form_pages": {
+    "detail_page_layout": {
+      "hero_card": "Top banner with entity badge, primary status pill, main metrics summary, and primary action bar (Edit, Deactivate, Print Report, Export PDF)",
+      "tabbed_content": "Alpine `x-data=\"{ activeTab: 'overview' }\"` with smooth indicator bar. Tabs: Overview, Operational Logs, Financial Transactions, Hardware Diagnostics, Audit Trail",
+      "content_grid": "3-column grid (2 cols main details + 1 col right sidebar for telemetry, assigned drivers, hardware specs, live location map)"
+    },
+    "form_page_layout": {
+      "container": "max-w-5xl mx-auto py-6",
+      "structure": "2-column layout (Main Form Fields in left 2 cols + Sticky Right Panel with publish/save controls, preview summary, field requirements)",
+      "section_cards": "Divided into logical field sets (e.g., General Info, Screen Hardware Specs, Driver Assignment, Tariff & Financials)",
+      "input_fields": {
+        "text": "bg-[#070A10] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 transition-all",
+        "select": "bg-[#070A10] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 transition-all",
+        "toggle_switch": "Alpine x-data switch with amber glow background when active"
+      }
+    }
+  },
+  "contextual_help_drawer_pattern": {
+    "alpine_component": "x-data=\"{ openHelp: false, helpTopic: 'general' }\"",
+    "drawer_container": "fixed inset-y-0 right-0 w-96 max-w-full bg-[#0B0F17] border-l border-gray-800 shadow-2xl z-50 transform transition-transform duration-300",
+    "trigger_buttons": "Tactical '?' or 'Help' buttons next to page titles and complex form fields with `data-testid='help-drawer-trigger'`",
+    "sections": [
+      {
+        "title": "Module Operational Guide",
+        "content": "Step-by-step instructions for the current admin screen (e.g. How to approve ad creatives, Provision a screen, Resolve SIM data caps)"
+      },
+      {
+        "title": "Keyboard Shortcuts Matrix",
+        "shortcuts": [
+          { "key": "Ctrl + K", "action": "Global Search Focus" },
+          { "key": "Alt + N", "action": "Create New Entity" },
+          { "key": "Alt + H", "action": "Toggle Contextual Help Drawer" },
+          { "key": "Esc", "action": "Close Modals / Drawers" }
+        ]
+      },
+      {
+        "title": "Field Specifications & Terms",
+        "content": "Definitions of DOOH terms like Proof of Play, CPM, Ad Loop Frequency, Transit Impressions"
+      },
+      {
+        "title": "Direct Support & Escalation",
+        "content": "One-click trigger to generate a support ticket for NOC engineers"
+      }
+    ]
+  },
+  "status_badges_and_pills_system": {
+    "online_active": "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-mono font-semibold flex items-center gap-1.5",
+    "offline_error": "bg-rose-500/10 text-rose-400 border border-rose-500/30 px-2.5 py-1 rounded-full text-xs font-mono font-semibold flex items-center gap-1.5",
+    "pending_approval": "bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-mono font-semibold flex items-center gap-1.5",
+    "in_progress_blue": "bg-blue-500/10 text-blue-400 border border-blue-500/30 px-2.5 py-1 rounded-full text-xs font-mono font-semibold flex items-center gap-1.5",
+    "draft_neutral": "bg-gray-800 text-gray-300 border border-gray-700 px-2.5 py-1 rounded-full text-xs font-mono font-semibold flex items-center gap-1.5"
+  },
+  "states_and_microinteractions": {
+    "skeleton_loading": "bg-gray-800/50 animate-pulse rounded-xl h-12 w-full mb-3",
+    "empty_state": {
+      "container": "text-center py-16 px-4 bg-[#111827]/40 border border-dashed border-gray-800 rounded-2xl",
+      "elements": "Lucide icon in amber-500/20 rounded-full p-4 inline-block mb-4, clear title, descriptive message, primary action CTA button"
+    },
+    "toast_notifications": {
+      "alpine_manager": "x-data=\"toastManager()\" @notice.window=\"addToast($event.detail)\"",
+      "toast_card": "fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#111827] border border-amber-500/40 text-white px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur-xl"
     }
   },
   "media": {
     "image_urls": {
-      "auto_rickshaw_mobility": "https://images.unsplash.com/photo-1626149637281-4e227308da18?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwxfHxhdXRvJTIwcmlja3NoYXclMjBjaXR5JTIwbW9iaWxpdHl8ZW58MHx8fHwxNzg5NjY5NzYxfDA&ixlib=rb-4.1.0&q=85",
-      "digital_billboard_tech": "https://images.unsplash.com/photo-1576608583800-2dea5261c7ee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwyfHxkaWdpdGFsJTIwYmlsbGJvYXJkJTIwYWR2ZXJ0aXNpbmclMjB0ZWNofGVufDB8fHx8MTc4OTY2OTc2MXww&ixlib=rb-4.1.0&q=85",
-      "city_traffic_night": "https://images.pexels.com/photos/14780175/pexels-photo-14780175.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      "auto_rickshaw_mobility": "https://images.unsplash.com/photo-1626149637281-4e227308da18?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "digital_billboard_tech": "https://images.unsplash.com/photo-1576608583800-2dea5261c7ee?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "city_traffic_night": "https://images.pexels.com/photos/14780175/pexels-photo-14780175.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "driver_avatar_sample": "https://images.pexels.com/photos/11176143/pexels-photo-11176143.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
     }
   },
   "testing_and_accessibility": {
-    "data_testid_rules": "All interactive elements, buttons, nav items, form inputs, counter cards, and modals MUST include clear kebab-case data-testid attributes (e.g. data-testid='hero-start-advertising-btn', data-testid='nav-how-it-works-link', data-testid='contact-submit-btn').",
-    "accessibility_standards": "WCAG AA contrast ratios, Alpine.js keyboard focus trapping on overlays, clear aria-expanded state on accordions and menus."
+    "data_testid_rules": "All interactive elements, sidebar links, top header actions, KPI cards, table rows, action buttons, modals, drawers, and form inputs MUST include clear kebab-case data-testid attributes (e.g. data-testid='sidebar-nav-network-autos', data-testid='kpi-card-total-autos', data-testid='table-row-108', data-testid='btn-create-campaign', data-testid='help-drawer-trigger').",
+    "accessibility_standards": "WCAG AA contrast ratios, Alpine.js keyboard focus trapping on overlays, aria-expanded state on dropdowns and sidebar groups."
   },
   "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
-    "Do not use transparent background on fixed navbars or dropdown menus.",
-    "Ensure dark background tinting (#070A10 / #0B0F17) with rich Amber (#F59E0B) actions.",
-    "Use Barlow Condensed for headings and Plus Jakarta Sans for body text.",
-    "Every dynamic stat block must handle loading and empty database states gracefully.",
-    "Attach data-testid to every interactive component."
+    "Do not use transparent background on fixed headers, dropdowns, or drawer overlays.",
+    "Maintain strict dark background palette (#070A10 / #0B0F17 / #111827) with tactical Amber (#F59E0B) highlights.",
+    "Use Barlow Condensed for headings, Plus Jakarta Sans for body text, and JetBrains Mono for data numbers, codes, and currency.",
+    "Every table, KPI widget, and form must handle loading, empty, and error database states gracefully.",
+    "Attach data-testid attributes to every navigation element, action button, filter input, and table cell action.",
+    "Ensure total stack adherence: Laravel 12 Blade + Tailwind CSS + Alpine.js + Lucide Icons + Chart.js."
   ]
 }

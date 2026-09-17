@@ -1,0 +1,69 @@
+{
+  "summary": "Phase 1 review of AutoAds Network public marketing site + Website Leads CRM + branding + regressions. Wrote /app/backend/tests/test_public_site.py (45 cases). 44/45 pass. One real bug: /robots.txt is served from the static file /app/laravel/public/robots.txt ('User-agent: *\\nDisallow:\\n') which SHADOWS the Laravel route PublicController::robots() (that route would emit a proper Sitemap: reference and Allow/Disallow rules). All 16 public pages render 200 with no error markers; sitemap.xml is valid XML with <urlset>/<loc>; home has the correct hero copy, animated stat counters (Active Autos 42, Screens Online 0, Coverage Cities 2, Active Campaigns 7), header CTA data-testid header-start-advertising-btn correctly links to /contact?type=advertiser; mobile hamburger open/close works (390x844); /network shows live stat cards + coverage; /pricing shows all 4 plans (Starter/Growth/City Domination/Enterprise); /faq renders accordion items with data-testid faq-<id>. Contact form POST creates a Lead (status='new'), redirects with green success flash data-testid site-flash-success; lead surfaces in /leads inbox; PUT /leads/{id} persists status change to 'contacted'; admin notification 'New Website Enquiry' is created and appears in /notifications and the bell dropdown. Branding settings tab renders logo upload input (data-testid set-logo) + save button (data-testid save-settings) + brand_name/tagline inputs, and PUT /settings/branding persists a new tagline. All 4 portal logins still redirect to their portals; admin routes /dashboard /autos /devices /campaigns /settlements /users /leads all 200 clean; sidebar shows 'Website Leads' link + AutoAds brand; /api/docs gated for guests (302/401/403); advertiser API login works and /api/v1/owners returns 403 for advertiser scope.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /robots.txt",
+        "issue": "Response is the default Laravel static file '/app/laravel/public/robots.txt' ('User-agent: *\\nDisallow:\\n'), which shadows the well-formed route PublicController::robots(). The route would emit 'User-agent: * / Allow: / / Disallow: /dashboard /settings /api/ / Sitemap: <abs URL>' but is never reached because Nginx/PHP serves the static file first. Fix: delete /app/laravel/public/robots.txt so the route is used. Low but real SEO impact — the site's own Sitemap reference is missing."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Public layout (public/layout.blade.php) - Alpine.js x-collapse",
+        "issue": "Console warns 'Alpine Warning: You can\\'t use [x-collapse] without first installing the Collapse plugin.' on /faq and any page using x-collapse (FAQ accordion). The accordion click toggles state but the smooth collapse animation is not applied. Fix: include Alpine collapse plugin via CDN e.g. <script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js\"></script> before Alpine core.",
+        "selector": "[data-testid^=\"faq-\"] (with x-collapse child)",
+        "priority": "LOW"
+      },
+      {
+        "component": "Footer social icons (public/partials footer)",
+        "issue": "Lucide reports 'twitter/linkedin/facebook/instagram icon name was not found in the provided icons object.' Newer Lucide renamed twitter->twitter-x. Icons render as empty <i> tags — footer social links have no visible glyph. Fix: use current lucide names (e.g. 'twitter' -> 'twitter' works in older versions; upgrade Lucide or switch to inline SVGs; check pinned CDN version).",
+        "selector": "footer i[data-lucide]",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "All public + admin pages",
+        "issues": [
+          "Tailwind CSS is still loaded from cdn.tailwindcss.com. Every page prints 'cdn.tailwindcss.com should not be used in production' — carried over from iteration_2. Move to a Vite/CLI build."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_public_site.py",
+    "/app/test_reports/pytest/phase1_results.xml"
+  ],
+  "action_items": [
+    "Delete /app/laravel/public/robots.txt so the Laravel route PublicController::robots() is used (adds proper Allow/Disallow + Sitemap:).",
+    "Install Alpine.js Collapse plugin so [x-collapse] works (FAQ accordion animations).",
+    "Fix lucide icon names for footer socials (twitter/linkedin/facebook/instagram) — currently unresolved with the pinned CDN version.",
+    "Move Tailwind off cdn.tailwindcss.com into a proper build (carry-over from iteration_2).",
+    "Carry-over MariaDB durability issue from iteration_2 still applies: cold restarts will lose the auto_ads DB unless a supervisor pre-start migrate+seed hook is added or the datadir is properly seeded."
+  ],
+  "critical_code_review_comments": [
+    "PublicController::contactSubmit correctly creates a Lead with status='new' and calls NotificationService::notifyAdmins('lead.created', ...) — verified end-to-end (form submit -> row in leads -> admin bell shows 'New Website Enquiry').",
+    "Public routes at top of routes/web.php are correctly namespaced under site.* and do NOT collide with admin routes (site.advertisers at /for-advertisers vs admin /advertisers — verified /advertisers still 302 to /login for guests).",
+    "LeadController::update correctly persists status via web PUT; the show view uses data-testid=lead-status-select and lead-save as spec'd.",
+    "Settings branding form uses data-testid=set-logo and save-settings, and PUT /settings/branding persists brand_tagline through Settings storage (verified round-trip).",
+    "Static /public/robots.txt shadows the route — a common Laravel foot-gun. Static assets in public/ always win.",
+    "FAQ view uses Alpine x-collapse but the plugin is not registered in the layout — accordion works via x-show but without the collapse animation."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_public_site.py (NEW, 45 tests: public pages, sitemap/robots, home markers, mobile menu, /network, /pricing, /faq, /site/stats.json, contact submit -> lead + flash, admin leads inbox + detail update, admin notification, branding form + save, admin regressions, portal logins, security regressions)"
+  ],
+  "success_rate": {
+    "backend": "97.8% (44/45 in test_public_site.py; the 1 failure is the robots.txt static-shadow bug reported as a minor backend issue)",
+    "frontend": "Home + /network + /pricing + /faq + /contact + mobile hamburger + FAQ accordion + branding tab all verified via Playwright; only cosmetic warnings (Alpine collapse, lucide social icons, Tailwind CDN)."
+  },
+  "test_credentials": "Same as iteration_2 — /app/memory/test_credentials.md. All Admin@123.",
+  "seed_data_creation": "Each pytest run inserts one 'TEST_lead_<epoch>@autoads.test' via /contact and one 'TEST_ui_<epoch>@autoads.test' via the Playwright UI smoke. Both are harmless TEST_ prefixed leads in the leads table with status='new' (one is bumped to 'contacted' by the update test).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Full Phase 1 regression suite lives in /app/backend/tests/test_public_site.py — run alongside test_autoads.py + test_security.py. If robots.txt bug is fixed by deleting /app/laravel/public/robots.txt, test_robots_txt should turn green (asserts 'Sitemap' or 'sitemap' appears in body). Alpine collapse & lucide icon fixes will not appear in HTTP tests — verify visually. Public site is dark-themed; 'Screens Online = 0' is EXPECTED (demo heartbeats older than offline threshold). Contact form throttle is 8/min — space out re-runs if you get 429.",
+  "rca_of_the_issue": "robots.txt SEO bug — Nginx/PHP-FPM in Laravel's public/ directory serves static files before hitting index.php's router. The stock Laravel install ships with a placeholder public/robots.txt containing only 'User-agent: *\\nDisallow:\\n'. The Phase 1 feature added a Route::get('/robots.txt', PublicController::robots) that constructs a proper robots response including Sitemap: <abs URL>, Allow/Disallow rules for /dashboard, /settings, /api/. Because the static file is present in public/, it always wins and the route never runs. Fix: `rm /app/laravel/public/robots.txt` (and optionally clear route cache). Reproduce: `curl https://<host>/robots.txt` returns 2 lines; after removing the static file it should return the full route body."
+}
