@@ -1,0 +1,7 @@
+@extends('layouts.app')@section('title','Settlements')@section('content')
+@php($m=fn($n)=>\App\Support\Fmt::money($n))
+<div class="flex items-center justify-between mb-6"><div><h1 class="text-3xl font-bold">Driver Settlements</h1><p class="text-slate-400 text-sm">Payable: {{ $m($payable) }}</p></div><a href="{{ route('settlements.create') }}" class="btn btn-primary">New Settlement</a></div>
+<div class="card p-4 mb-4"><form method="GET" class="flex gap-3"><select name="status" class="inp max-w-xs" onchange="this.form.submit()"><option value="all">All</option>@foreach($statuses as $s)<option value="{{ $s }}" @selected(request('status')==$s)>{{ ucfirst($s) }}</option>@endforeach</select></form></div>
+<div class="card overflow-hidden"><table class="grid"><thead><tr><th>Code</th><th>Driver</th><th>Period</th><th>Net</th><th>Status</th><th></th></tr></thead><tbody>
+@forelse($rows as $s)<tr><td class="mono">{{ $s->code }}</td><td>{{ $s->driver?->name }}</td><td>{{ $s->period_start?->format('d M') }}–{{ $s->period_end?->format('d M') }}</td><td class="mono">{{ $m($s->net_payable) }}</td><td><x-badge :status="$s->status"/></td><td class="text-right"><a href="{{ route('settlements.show',$s) }}" class="text-amber-400 text-xs">View</a></td></tr>@empty<tr><td colspan="6" class="text-center py-12 text-slate-500">No settlements</td></tr>@endforelse
+</tbody></table></div><div class="mt-4">{{ $rows->links() }}</div>@endsection

@@ -1,0 +1,6 @@
+@extends('layouts.app')@section('title','Notifications')@section('content')
+<div class="flex items-center justify-between mb-6"><h1 class="text-3xl font-bold">Notification Center</h1><form method="POST" action="{{ route('notifications.readAll') }}">@csrf<button class="btn btn-sec">Mark all read</button></form></div>
+<div class="flex gap-2 mb-4 text-sm">@foreach(['all','unread','critical','warning','information','success'] as $f)<a href="?filter={{ $f }}" class="px-3 py-1 rounded {{ $filter==$f?'bg-amber-500 text-[#0B0F17]':'bg-white/5 text-slate-300' }}">{{ ucfirst($f) }}</a>@endforeach</div>
+<div class="card divide-y divide-white/5">
+@forelse($rows as $n)<div class="flex items-start gap-3 px-5 py-3 {{ $n->read_at?'':'bg-amber-500/5' }}"><x-badge :status="$n->type"/><div class="flex-1"><div class="font-medium">{{ $n->title }}</div><p class="text-sm text-slate-400">{{ $n->message }}</p><span class="text-xs text-slate-500">{{ $n->created_at->diffForHumans() }}</span></div>@if($n->link)<a href="{{ $n->link }}" class="text-amber-400 text-xs">Open</a>@endif</div>@empty<p class="px-5 py-12 text-center text-slate-500">No notifications</p>@endforelse
+</div><div class="mt-4">{{ $rows->links() }}</div>@endsection

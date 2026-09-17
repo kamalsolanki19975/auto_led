@@ -1,0 +1,166 @@
+{
+  "project_name": "DOOH Passenger Auto Advertising Network Platform",
+  "archetype": "THE PERFORMANCE PRO / OPERATIONS CONTROL ROOM",
+  "design_philosophy": {
+    "core_motto": "Complex Backend, Simple Experience",
+    "theme": "Dark operations mode default for admin/ops, crisp responsive clean mode for advertisers and mobile drivers/techs",
+    "principles": [
+      "Tactical Control Room Aesthetics: High visibility, dense metrics, clear status indicators without visual noise",
+      "Unified Entity Anchors: Single-click navigation across Auto -> Screen -> Device -> SIM -> Campaign -> Driver",
+      "Strict Semantic Color Coding: Green for online/active, Amber for warning/under-delivery, Red for offline/critical, Blue for programmatic/in-review",
+      "Zero Visual Slop: High contrast, 1px subtle tactical borders, crisp typography pairing, zero default rounded-xl gradients"
+    ]
+  },
+  "typography": {
+    "font_family_heading": "'Barlow Condensed', 'Outfit', sans-serif",
+    "font_family_body": "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif",
+    "font_family_mono": "'JetBrains Mono', 'Fira Code', monospace",
+    "google_fonts_cdn": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+    "hierarchy": {
+      "h1_page_title": "text-2xl sm:text-3xl font-bold font-heading tracking-tight text-slate-100",
+      "h2_section_header": "text-lg sm:text-xl font-semibold font-heading tracking-wide text-slate-200 uppercase",
+      "h3_card_header": "text-base font-semibold text-slate-100",
+      "body_regular": "text-sm text-slate-300 font-body leading-relaxed",
+      "body_small": "text-xs text-slate-400 font-body leading-normal",
+      "label_mono": "font-mono text-xs uppercase tracking-wider text-slate-400"
+    }
+  },
+  "colors": {
+    "css_variables": {
+      "--bg-app": "#0B0F17",
+      "--bg-sidebar": "#070A10",
+      "--bg-card": "#111827",
+      "--bg-card-hover": "#1F2937",
+      "--bg-input": "#172033",
+      "--border-subtle": "rgba(255, 255, 255, 0.08)",
+      "--border-strong": "rgba(255, 255, 255, 0.18)",
+      "--text-main": "#F3F4F6",
+      "--text-muted": "#9CA3AF",
+      "--accent-primary": "#F59E0B",
+      "--accent-primary-hover": "#D97706",
+      "--accent-blue": "#3B82F6",
+      "--accent-emerald": "#10B981",
+      "--accent-rose": "#EF4444"
+    },
+    "tailwind_palette": {
+      "app_bg": "bg-[#0B0F17]",
+      "sidebar_bg": "bg-[#070A10]",
+      "card_bg": "bg-[#111827]",
+      "card_border": "border border-white/10",
+      "text_primary": "text-slate-100",
+      "text_secondary": "text-slate-400",
+      "accent": "bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold"
+    },
+    "status_semantics": {
+      "online_active_settled": {
+        "badge": "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+        "dot": "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]",
+        "label": "Online / Active / Settled"
+      },
+      "offline_critical_overdue": {
+        "badge": "bg-rose-500/10 text-rose-400 border border-rose-500/30",
+        "dot": "bg-rose-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]",
+        "label": "Offline / Failed / Overdue"
+      },
+      "warning_under_delivery_pending": {
+        "badge": "bg-amber-500/10 text-amber-400 border border-amber-500/30",
+        "dot": "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]",
+        "label": "Pending / Under-Delivery / Maintenance"
+      },
+      "informational_draft_review": {
+        "badge": "bg-sky-500/10 text-sky-400 border border-sky-500/30",
+        "dot": "bg-sky-500",
+        "label": "Draft / In-Review / Programmatic"
+      }
+    }
+  },
+  "layout_and_navigation": {
+    "header": {
+      "specs": "Sticky top-0 z-40 h-16 bg-[#0B0F17]/90 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 flex items-center justify-between",
+      "elements": [
+        "Global Search Input (Hotkey '/' or Ctrl+K)",
+        "Quick Action (+ Create New Dropdown)",
+        "Role Switcher / Simulator (Super Admin, Ops, Advertiser, Driver, Tech)",
+        "Notification Bell with live unread badge",
+        "User Profile Dropdown"
+      ]
+    },
+    "sidebar": {
+      "specs": "Fixed left-0 top-0 h-screen w-64 bg-[#070A10] border-r border-white/10 flex flex-col z-50",
+      "nav_groups": [
+        {
+          "title": "DASHBOARD",
+          "items": ["Executive Command Center", "Live Fleet Map", "DOOH Playback Monitor"]
+        },
+        {
+          "title": "NETWORK & HARDWARE",
+          "items": ["Auto Rickshaws", "Digital Screens", "IoT Media Players", "SIM Cards & Data"]
+        },
+        {
+          "title": "ADVERTISING",
+          "items": ["Advertisers", "Ad Library (Creatives)", "Campaigns & Geofencing", "Proof of Play (PoP)"]
+        },
+        {
+          "title": "OPERATIONS & FIELD",
+          "items": ["Driver Earnings", "Technician Dispatch", "Device Diagnostics"]
+        },
+        {
+          "title": "FINANCE & REPORTS",
+          "items": ["Settlements & Payouts", "Revenue vs Expense", "Profitability Analytics", "Custom Reports"]
+        }
+      ]
+    },
+    "content_wrapper": {
+      "specs": "pl-64 pt-16 min-h-screen bg-[#0B0F17] p-6 space-y-6"
+    }
+  },
+  "key_components": {
+    "kpi_cards": {
+      "classes": "bg-[#111827] border border-white/10 rounded-lg p-5 flex flex-col justify-between hover:border-white/20 transition-all",
+      "structure": "Top: Title + Icon; Middle: Big Metric (font-mono) + Subtitle; Bottom: Mini Sparkline / Trend Badge"
+    },
+    "data_tables": {
+      "classes": "w-full text-left text-sm text-slate-300 border-collapse",
+      "thead": "bg-[#172033] text-xs font-mono uppercase tracking-wider text-slate-400 border-b border-white/10",
+      "tbody_tr": "border-b border-white/5 hover:bg-white/[0.02] transition-colors",
+      "features": ["Multi-column sort", "Filter drawers", "Status pill badges", "Inline action dropdown", "Pagination controls"]
+    },
+    "buttons": {
+      "primary": "bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-md text-sm transition-all shadow-md active:scale-95",
+      "secondary": "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 px-4 py-2 rounded-md text-sm transition-all",
+      "danger": "bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-sm transition-all"
+    },
+    "forms": {
+      "input_classes": "w-full bg-[#172033] border border-white/10 rounded-md px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500",
+      "select_classes": "w-full bg-[#172033] border border-white/10 rounded-md px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+    }
+  },
+  "image_urls": [
+    {
+      "category": "auto_rickshaw_night_screen",
+      "url": "https://images.unsplash.com/photo-1769289071393-076ca2eea5a1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MTJ8MHwxfHNlYXJjaHwzfHxhdXRvJTIwcmlja3NoYXclMjBkaWdpdGFsJTIwc2NyZWVuJTIwdGF4aSUyMGFkdmVydGlzaW5nfGVufDB8fHx8MTc4OTY0ODI4OXww&ixlib=rb-4.1.0&q=85",
+      "description": "Auto rickshaw at night with digital display ambience"
+    },
+    {
+      "category": "tuk_tuk_urban_advertising",
+      "url": "https://images.pexels.com/photos/16959677/pexels-photo-16959677.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Urban DOOH auto rickshaw advertising fleet in city streets"
+    },
+    {
+      "category": "auto_in_motion",
+      "url": "https://images.pexels.com/photos/12280608/pexels-photo-12280608.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Passenger auto rickshaw on route"
+    }
+  ],
+  "testing_and_accessibility": {
+    "data_testid_rule": "ALL interactive buttons, inputs, selects, tabs, status badges, menu items, table rows, modal triggers MUST have explicit data-testid attributes (e.g. data-testid='create-campaign-btn', data-testid='kpi-active-autos-count').",
+    "contrast_rule": "Ensure minimum 4.5:1 text contrast for body copy against dark card backgrounds.",
+    "keyboard_nav": "Global search openable with '/' key, modals closeable with ESC key."
+  },
+  "instructions_to_main_agent": [
+    "Build a production-grade DOOH fleet management platform with server-rendered HTML/Blade, Tailwind CSS, Alpine.js, and Chart.js",
+    "Ensure all role dashboards (Super Admin, Ops, Finance, Advertiser, Driver Mobile, Technician Mobile) are easily accessible via role switcher in top header",
+    "Strictly follow the color semantics and typography scales defined in this file",
+    "Include data-testid on every interactive element and data card for automated validation"
+  ]
+}
