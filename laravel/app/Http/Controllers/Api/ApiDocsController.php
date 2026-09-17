@@ -13,8 +13,7 @@ class ApiDocsController extends Controller
 
     public function spec()
     {
-        return response()->json($this->build())
-            ->header('Access-Control-Allow-Origin', '*');
+        return response()->json($this->build());
     }
 
     protected function build(): array

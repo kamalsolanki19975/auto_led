@@ -1,6 +1,5 @@
 mariadb-client=1:10.11.18-0+deb12u1
 mariadb-server=1:10.11.18-0+deb12u1
-mysql-apt-config=0.8.33-1
 php8.2-bcmath=8.2.33-1~deb12u1
 php8.2-cli=8.2.33-1~deb12u1
 php8.2-curl=8.2.33-1~deb12u1

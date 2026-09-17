@@ -6,14 +6,10 @@ use App\Http\Controllers\Api\ResourceApiController;
 use App\Http\Controllers\Api\DeviceApiController;
 use App\Http\Controllers\Api\ApiDocsController;
 
-// ---- Interactive API documentation ----
-Route::get('/docs', [ApiDocsController::class, 'ui']);
-Route::get('/openapi.json', [ApiDocsController::class, 'spec']);
-
 Route::prefix('v1')->group(function () {
 
     // ---- Auth ----
-    Route::post('/auth/login', [AuthApiController::class, 'login']);
+    Route::post('/auth/login', [AuthApiController::class, 'login'])->middleware('throttle:10,1');
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [AuthApiController::class, 'me']);
         Route::post('/auth/logout', [AuthApiController::class, 'logout']);
@@ -27,7 +23,7 @@ Route::prefix('v1')->group(function () {
 
     // ---- Device API (separate device credentials) ----
     Route::prefix('device')->group(function () {
-        Route::post('/authenticate', [DeviceApiController::class, 'authenticate']);
+        Route::post('/authenticate', [DeviceApiController::class, 'authenticate'])->middleware('throttle:10,1');
 
         Route::middleware('device.auth')->group(function () {
             Route::post('/heartbeat', [DeviceApiController::class, 'heartbeat']);

@@ -75,6 +75,8 @@ class PortalController extends Controller
     // Driver raises a dispute against a settlement
     public function raiseDispute(Request $request, DriverSettlement $settlement)
     {
+        $user = auth()->user();
+        abort_unless($settlement->driver_id === $user->driver_id, 403, 'You can only dispute your own settlements.');
         $data = $request->validate(['reason' => 'required|string', 'disputed_amount' => 'nullable|numeric']);
         $settlement->disputes()->create([
             'code' => \App\Support\Codes::next('driver_disputes', 'DIS'),

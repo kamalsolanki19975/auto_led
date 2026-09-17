@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     ReportController, NotificationController, LogController, SettingsController,
     UserController, RoleController, ApiApplicationController, WebhookController
 };
+use App\Http\Controllers\Api\ApiDocsController;
 
 /* ---------------- Guest ---------------- */
 Route::middleware('guest')->group(function () {
@@ -127,6 +128,8 @@ Route::middleware('auth')->group(function () {
 
     // Integrations
     Route::middleware('permission:integrations.api.view')->group(function () {
+        Route::get('api/docs', [ApiDocsController::class, 'ui'])->name('api.docs');
+        Route::get('api/openapi.json', [ApiDocsController::class, 'spec'])->name('api.spec');
         Route::get('api-apps', [ApiApplicationController::class, 'index'])->name('api-apps.index');
         Route::post('api-apps', [ApiApplicationController::class, 'store'])->name('api-apps.store');
         Route::post('api-apps/{app}/keys', [ApiApplicationController::class, 'generateKey'])->name('api-apps.keys');
