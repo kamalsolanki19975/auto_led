@@ -39,8 +39,12 @@
   <!-- Sidebar -->
   <aside class="fixed left-0 top-0 h-screen w-60 bg-[#070A10] border-r border-white/10 flex flex-col z-40 overflow-y-auto" x-data="{}">
     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-5 h-16 border-b border-white/10 shrink-0">
-      <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-amber-500 text-[#0B0F17] font-bold">A</span>
-      <span class="font-heading text-lg font-bold tracking-wide">AUTOADS<span class="text-amber-500">·</span>NET</span>
+      @if(\App\Support\Brand::logo())
+        <img src="{{ \App\Support\Brand::logo() }}" alt="{{ \App\Support\Brand::name() }}" class="h-8 max-w-[160px] object-contain">
+      @else
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-amber-500 text-[#0B0F17] font-bold">{{ \App\Support\Brand::initials() }}</span>
+        <span class="font-heading text-lg font-bold tracking-wide">{{ \App\Support\Brand::wordmark()[0] }}<span class="text-amber-500">·</span>{{ \App\Support\Brand::wordmark()[1] }}</span>
+      @endif
     </a>
     <nav class="flex-1 py-3 text-sm">
       @foreach($nav as $group)

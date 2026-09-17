@@ -10,7 +10,8 @@ use App\Http\Controllers\{
     RateCardController, ExpenseController, InvoiceController, PaymentController, SettlementController,
     EarningController, RevenueController, ProfitabilityController,
     ReportController, NotificationController, LogController, SettingsController,
-    UserController, RoleController, ApiApplicationController, WebhookController
+    UserController, RoleController, ApiApplicationController, WebhookController,
+    PublicController, LeadController
 };
 use App\Http\Controllers\Api\ApiDocsController;
 
@@ -24,7 +25,27 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
 });
 
-Route::get('/', fn () => redirect()->route('login'));
+/* ---------------- Public Website ---------------- */
+Route::controller(PublicController::class)->group(function () {
+    Route::get('/', 'home')->name('site.home');
+    Route::get('/how-it-works', 'howItWorks')->name('site.how');
+    Route::get('/for-advertisers', 'advertisers')->name('site.advertisers');
+    Route::get('/auto-owners', 'autoOwners')->name('site.owners');
+    Route::get('/network', 'network')->name('site.network');
+    Route::get('/advertising-solutions', 'solutions')->name('site.solutions');
+    Route::get('/technology', 'technology')->name('site.technology');
+    Route::get('/analytics', 'analytics')->name('site.analytics');
+    Route::get('/developers', 'developers')->name('site.developers');
+    Route::get('/about', 'about')->name('site.about');
+    Route::get('/pricing', 'pricing')->name('site.pricing');
+    Route::get('/faq', 'faq')->name('site.faq');
+    Route::get('/contact', 'contact')->name('site.contact');
+    Route::post('/contact', 'contactSubmit')->name('site.contact.submit')->middleware('throttle:8,1');
+    Route::get('/legal/{doc}', 'legal')->name('site.legal')->where('doc', 'privacy|terms|cookie');
+    Route::get('/site/stats.json', 'stats')->name('site.stats');
+    Route::get('/sitemap.xml', 'sitemap');
+    Route::get('/robots.txt', 'robots');
+});
 
 /* ---------------- Authenticated ---------------- */
 Route::middleware('auth')->group(function () {
@@ -141,6 +162,13 @@ Route::middleware('auth')->group(function () {
         Route::post('webhooks', [WebhookController::class, 'store'])->name('webhooks.store');
         Route::post('webhooks/{webhook}/test', [WebhookController::class, 'test'])->name('webhooks.test');
         Route::delete('webhooks/{webhook}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
+    });
+
+    // CRM
+    Route::middleware('permission:crm.lead.view')->group(function () {
+        Route::get('leads', [LeadController::class, 'index'])->name('leads.index');
+        Route::get('leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
+        Route::put('leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
     });
 
     // Administration

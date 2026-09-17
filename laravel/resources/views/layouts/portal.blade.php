@@ -37,8 +37,8 @@
 <body>
 <header class="sticky top-0 z-30 h-16 bg-[#070A10]/95 backdrop-blur border-b border-white/10 px-6 flex items-center justify-between gap-4">
   <div class="flex items-center gap-3">
-    <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-amber-500 text-[#0B0F17] font-bold">A</span>
-    <span class="font-heading text-lg font-bold tracking-wide">AUTOADS<span class="text-amber-500">·</span>NET</span>
+    <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-amber-500 text-[#0B0F17] font-bold">{{ \App\Support\Brand::initials() }}</span>
+    <span class="font-heading text-lg font-bold tracking-wide">{{ \App\Support\Brand::wordmark()[0] }}<span class="text-amber-500">·</span>{{ \App\Support\Brand::wordmark()[1] }}</span>
     <span class="ml-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold px-3 py-1 uppercase tracking-wide" data-testid="portal-badge">@yield('portal','Portal')</span>
   </div>
   <div x-data="{open:false}" class="relative">

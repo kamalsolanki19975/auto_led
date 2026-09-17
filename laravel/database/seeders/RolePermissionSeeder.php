@@ -48,6 +48,7 @@ class RolePermissionSeeder extends Seeder
             'admin.notification' => ['view'],
             'admin.audit' => ['view'],
             'admin.settings' => ['view', 'update'],
+            'crm.lead' => ['view', 'update', 'delete'],
         ];
 
         $allSlugs = [];
@@ -73,9 +74,9 @@ class RolePermissionSeeder extends Seeder
             ['super-admin', 'Super Admin', 'admin', 'all'],
             ['administrator', 'Administrator', 'admin', 'all'],
             ['operations-manager', 'Operations Manager', 'admin', ['dashboard', 'network.', 'operations.', 'reports']],
-            ['advertising-manager', 'Advertising Manager', 'admin', ['dashboard', 'advertising.', 'reports']],
+            ['advertising-manager', 'Advertising Manager', 'admin', ['dashboard', 'advertising.', 'reports', 'crm.lead']],
             ['finance-manager', 'Finance Manager', 'admin', ['dashboard', 'finance.', 'reports']],
-            ['sales-user', 'Sales User', 'admin', ['dashboard', 'advertising.advertiser', 'advertising.campaign.view', 'advertising.campaign.create']],
+            ['sales-user', 'Sales User', 'admin', ['dashboard', 'advertising.advertiser', 'advertising.campaign.view', 'advertising.campaign.create', 'crm.lead']],
             ['technician', 'Technician', 'technician', ['dashboard', 'operations.installation', 'operations.maintenance', 'network.device', 'network.sim.view']],
             ['advertiser', 'Advertiser', 'advertiser', ['advertising.advertisement.view', 'advertising.advertisement.create', 'advertising.campaign.view']],
             ['driver', 'Driver', 'driver', []],

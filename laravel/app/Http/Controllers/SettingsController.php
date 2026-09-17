@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    protected array $groups = ['company', 'localization', 'device', 'advertising', 'finance', 'email', 'sms', 'whatsapp', 'api'];
+    protected array $groups = ['company', 'branding', 'website', 'localization', 'seo', 'social', 'device', 'advertising', 'finance', 'email', 'sms', 'whatsapp', 'api'];
 
     public function index(Request $request)
     {
@@ -18,13 +18,20 @@ class SettingsController extends Controller
         foreach ($this->groups as $g) {
             $settings[$g] = SystemSetting::group($g);
         }
-        return view('admin.settings', ['settings' => $settings, 'tab' => $tab]);
+        return view('admin.settings', ['settings' => $settings, 'tab' => $tab, 'groups' => $this->groups]);
     }
 
     public function update(Request $request, string $group)
     {
         abort_unless(in_array($group, $this->groups, true), 404);
-        $data = $request->except(['_token', '_method']);
+
+        if ($group === 'branding' && $request->hasFile('logo')) {
+            $request->validate(['logo' => 'image|mimes:png,jpg,jpeg,svg,webp|max:2048']);
+            $path = $request->file('logo')->store('branding', 'public');
+            SystemSetting::put('branding', 'logo_path', $path);
+        }
+
+        $data = $request->except(['_token', '_method', 'logo']);
         foreach ($data as $key => $value) {
             SystemSetting::put($group, $key, $value);
         }

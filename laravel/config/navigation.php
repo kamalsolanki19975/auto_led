@@ -46,6 +46,9 @@ return [
         ['label' => 'Webhooks', 'route' => 'webhooks.index', 'icon' => 'webhook', 'perm' => 'integrations.webhook.view'],
         ['label' => 'API Logs', 'route' => 'api-logs.index', 'icon' => 'scroll-text', 'perm' => 'integrations.api.view'],
     ]],
+    ['group' => 'CRM', 'items' => [
+        ['label' => 'Website Leads', 'route' => 'leads.index', 'icon' => 'inbox', 'perm' => 'crm.lead.view'],
+    ]],
     ['group' => 'Administration', 'items' => [
         ['label' => 'Users', 'route' => 'users.index', 'icon' => 'users', 'perm' => 'admin.user.view'],
         ['label' => 'Roles', 'route' => 'roles.index', 'icon' => 'shield', 'perm' => 'admin.role.view'],
